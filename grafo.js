@@ -210,3 +210,12 @@ function grau(v) {
         };
     }
 }
+
+function prim(){
+
+}
+
+function dijkstra(){
+    var caminho = [];
+    var tabela = {};
+}
