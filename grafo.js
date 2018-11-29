@@ -218,4 +218,12 @@ function prim(){
 function dijkstra(){
     var caminho = [];
     var tabela = {};
+    nodes = grafo.keys();
+    console.log(nodes);
+    // exemplo de for each
+    // grafo.forEach(function(valor, chave){
+    // });
+    nodes.forEach(no => {
+        console.log(no);
+    });
 }
