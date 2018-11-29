@@ -91,37 +91,53 @@ function prim(grf) {
     agm = {};
 
     keys = Object.keys(g);
-    v = keys.pop();
-    insereVertice(agm, v);
-    inseridos = [v];
-    console.log('Comecou pelo '+v);
+    if(keys.length){
+        v = keys.pop();
+        insereVertice(agm, v);
+        inseridos = [v];
+        console.log('Comecou pelo '+v);
 
-    while (len(agm) < len(g)){
-        console.log('Loop..................................');
-        menor = null;
+        console.log(agm);
+        console.log(g);
+        
+        while (Object.keys(agm).length < Object.keys(g).length) {
+            console.log('Loop..................................');
+            menor = null;
 
-        console.log('Inseridos '+inseridos);
-        for (x in inseridos){
-            for (y, p in g[x].items()){
-                console.log('Verificando '+x+'---'+p+'---'+y);
-                if (menor==null || p < menor.peso)
-                    menor = {'viz': x, 'vertice': y, 'peso': p};
-                console.log('\tMENOR: '+menor.viz+'---'+menor.peso+'---'+menor.vertice);
+            console.log('Inseridos '+inseridos);
+            inseridos.forEach(x => {
+                // console.log('Verificando '+x);
+                // console.log(g[x]);
+                for (y in g[x]){
+                    p = g[x][y];
+                    console.log('Verificando '+x+'---'+p+'---'+y);
+                    if (menor==null || p < menor.peso)
+                        menor = {'viz': x, 'vertice': y, 'peso': p};
+                    console.log('\tMENOR: '+menor.viz+'---'+menor.peso+'---'+menor.vertice);
+                }
+            });
+            if (menor == null) { // Grafo desconexo
+                desconexo = true;
+                agm = {
+                    'success': false,
+                    'error': 'Não há uma Árvore Geradora Mínima, grafo desconexo!'
+                };
+                break;
             }
+            
+            inseridos.push(menor.vertice);
+            insereVertice(agm, menor.vertice);
+            insereAresta(agm, menor.vertice, menor.viz, menor.peso);
+            console.log('Selecionada aresta',menor.viz,'---',menor.peso,'---',menor.vertice);
+
+            removeAresta(g, menor.vertice, menor.viz);
         }
-
-        inseridos.append(menor.vertice);
-        ins_v(agm, menor.vertice);
-        ins_e(agm, menor.vertice, menor.viz, menor.peso);
-        console.log('Selecionada aresta',menor.viz,'---',menor.peso,'---',menor.vertice);
-
-        rem_e(g, menor.vertice, menor.viz);
     }
-    return agm;
 }
 
 function dijkstra(g, noi, nof) {
-    var caminho = [];
+    var desconexo = false;
+    var path = [];
     var tabela = {};
     var nodes = Object.keys(g);
     for (const no in g) {
@@ -156,15 +172,30 @@ function dijkstra(g, noi, nof) {
                 menor = {'node': no, 'dist': d};
             console.log(menor);
         });
+        if (menor == null) { // Grafo desconexo
+            desconexo = true;
+            break;
+        }
         atual = menor.node;
     }
 
+    if(desconexo){
+        return {
+            'success': false,
+            'error': 'Não é possivel formar o caminho, grafo desconexo!'
+        };
+    }
+
 	while (atual != noi){
-		caminho.push(atual)
+		path.push(atual)
 		atual = tabela[atual].ant;
     }
-	caminho.push(atual);
-	// caminho.reverse()
+	path.push(atual);
+	path.reverse();
 
-	return {'path':caminho, 'dist':tabela[nof].dist};
+	return {
+	    'success': true,
+	    'path': path,
+	    'dist': tabela[nof].dist
+	};
 }
