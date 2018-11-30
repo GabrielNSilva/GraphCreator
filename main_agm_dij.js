@@ -75,7 +75,7 @@ $(document).ready(function(){
     });
 
     $('#button-add_aresta').on('click', function () {
-        var resp = insereAresta(grafo, $('#add_aresta_1').val(), $('#add_aresta_2').val(), $('#add_aresta_val').val());
+        var resp = insereAresta(grafo, $('#add_aresta_1').val(), $('#add_aresta_2').val(), Number($('#add_aresta_val').val()));
         atualiza();
         respAlerta($(this), resp);
     });
@@ -90,8 +90,25 @@ $(document).ready(function(){
     $('#button-menor_caminho').on('click', function () {
         var inicio = $('#caminho_ini').val();
         var final = $('#caminho_fim').val();
-        c = dijkstra(grafo, inicio, final);
-        console.log(c);
+        resp = dijkstra(grafo, inicio, final);
+        console.log(resp);
+        $('.modal-title').html('Menor caminho entre os vértices "' + inicio + '" e "' + final + '"');
+        var body = '';
+        if(resp.success){
+            body += '<h6><b>Caminho: </b>';
+            for (let i = 0; i < resp.path.length; i++) {
+                const v = resp.path[i];
+                body += v
+                if(i!=resp.path.length-1)
+                    body += ' - ';
+            }
+            body += '</b></h6>';
+            body += '<h6><b>Tamanho:</b> ' + resp.dist + '</h6>';
+        }else{
+            body = '<h6><b>' + resp.error + '</b></h6>';
+        }
+        $('.modal-body').html(body);
+        $('#modal').modal('show');
     });
 
     testeGrafo();
